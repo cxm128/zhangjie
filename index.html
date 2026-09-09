@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>致全世界最最最好的生物老师</title>
+    <title>致最棒的生物老师</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            background-color: #0b1021; 
+            background: radial-gradient(circle at center, #111827 0%, #030712 100%);
             color: white;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             overflow: hidden;
@@ -18,56 +18,67 @@
         }
         .hint {
             position: absolute;
-            bottom: 30px;
+            bottom: 5%;
+            width: 100%;
+            text-align: center;
             font-size: 14px;
-            color: rgba(255, 255, 255, 0.6);
-            animation: pulse 2s infinite;
+            color: rgba(255, 255, 255, 0.5);
+            letter-spacing: 1px;
+            animation: pulse 3s infinite;
+            pointer-events: none;
         }
-        @keyframes pulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
+        @keyframes pulse { 0%, 100% { opacity: 0.4; } 50% { opacity: 0.9; } }
 
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(5px); 
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px); 
             display: none; 
             justify-content: center;
             align-items: center;
             z-index: 10;
         }
         .card {
-            background: #1c2541;
-            border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 15px;
-            padding: 20px;
-            max-width: 500px;
+            background: #1e293b;
+            border: 1px solid rgba(76, 201, 240, 0.2);
+            border-radius: 16px;
+            padding: 25px;
+            max-width: 600px; 
             width: 90%;
             text-align: center;
-            animation: popIn 0.3s ease-out;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+            animation: fadeIn 0.3s ease-out;
         }
-        @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        @keyframes fadeIn { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         
         .card img {
             width: 100%;
+            max-height: 450px; 
+            object-fit: contain; 
             border-radius: 10px;
             margin-bottom: 15px;
+            border: 1px solid rgba(255,255,255,0.1);
         }
-        .card p { font-size: 16px; line-height: 1.6; margin-bottom: 15px;}
+        .card p { font-size: 16px; line-height: 1.6; color: #cbd5e1; margin-bottom: 25px;}
         .close-btn {
             background: #4cc9f0;
             border: none;
-            padding: 8px 20px;
-            border-radius: 20px;
+            padding: 10px 35px;
+            border-radius: 25px;
             color: #0b1021;
             font-weight: bold;
+            font-size: 15px;
             cursor: pointer;
+            transition: transform 0.2s;
         }
+        .close-btn:hover { transform: scale(1.05); }
     </style>
 </head>
 <body>
 
     <canvas id="dnaCanvas"></canvas>
-    <div class="hint">✨ 点击发光的基因节点，解锁专属记忆 ✨</div>
+    <div class="hint">✨ 点击 DNA 上更亮的白色小点，解锁专属记忆 ✨</div>
 
     <div class="modal-overlay" id="modal">
         <div class="card">
@@ -78,161 +89,16 @@
     </div>
 
 <script>
-    // 1. 你的照片和文字数据（在这里修改）
-    const memories = [
-        { 
-            text: "总有些惊喜的际遇，比方说当我遇见你～", 
-            img: "images/photo1.jpg" 
-        },
-        { 
-            text: "老师的课就像ATP，总能给我们提供源源不断的能量！", 
-            img: "images/photo2.jpg" 
-        },
-        { 
-            text: "特别幸福的小课代表", 
-            img: "images/photo3.jpg" 
-        },
-        { 
-            text: "我最最最亲爱的生物老师，教师节快乐！！！", 
-            img: "images/photo4.jpg" 
-        }
-    ];
-
-    // 2. 简单的 DNA 旋转动画逻辑
-    const canvas = document.getElementById('dnaCanvas');
-    const ctx = canvas.getContext('2d');
-    let width, height, points = [];
-    
-    function resize() {
-        width = canvas.width = window.innerWidth;
-        height = canvas.height = window.innerHeight;
-    }
-    window.addEventListener('resize', resize);
-    resize();
-
-    // 生成节点
-    for(let i=0; i<memories.length; i++) {
-        points.push({ angle: (i / memories.length) * Math.PI * 2, index: i });
-    }
-
-    let time = 0;
-    function animate() {
-        ctx.clearRect(0, 0, width, height);
-        time += 0.02;
-
-        points.forEach(p => {
-            const y = height / 2 + Math.sin(p.angle + time) * 150;
-            const x = width / 2 + Math.cos(p.angle + time) * 150;
-            const z = Math.sin(p.angle + time); 
-
-            // 画连接线
-            const y2 = height / 2 + Math.sin(p.angle + Math.PI + time) * 150;
-            const x2 = width / 2 + Math.cos(p.angle + Math.PI + time) * 150;
-            ctx.beginPath();
-            ctx.moveTo(x, y);
-            ctx.lineTo(x2, y2);
-            ctx.strokeStyle = `rgba(76, 201, 240, ${0.2 + z * 0.3})`;
-            ctx.stroke();
-
-            // 画发光节点
-            ctx.beginPath();
-            ctx.arc(x, y, 8 + z * 4, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(255, 255, 255, ${0.5 + z * 0.5})`;
-            ctx.shadowBlur = 15 + z * 10;
-            ctx.shadowColor = '#4cc9f0';
-            ctx.fill();
-            ctx.shadowBlur = 0;
-
-            // 绑定点击事件
-            p.x = x; p.y = y; p.radius = 15;
-        });
-        requestAnimationFrame(animate);
-    }
-    animate();
-
-    // 3. 点击交互逻辑
-    canvas.addEventListener('click', (e) => {
-        const rect = canvas.getBoundingClientRect();
-        const mouseX = e.clientX - rect.left;
-        const mouseY = e.clientY - rect.top;
-
-        points.forEach(p => {
-            const dist = Math.sqrt((mouseX - p.x)**2 + (mouseY - p.y)**2);
-            if(dist < p.radius) {
-                openModal(memories[p.index]);
-            }
-        });
-    });
-
-    function openModal(data) {
-        document.getElementById('modalImg').src = data.img;
-        document.getElementById('modalText').innerText = data.text;
-        document.getElementById('modal').style.display = 'flex';
-    }
-    function closeModal() {
-        document.getElementById('modal').style.display = 'none';
-    }
-</script>
-</body>
-</html>            align-items: center;
-            z-index: 10;
-        }
-        .card {
-            background: #1c2541;
-            border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 15px;
-            padding: 20px;
-            max-width: 500px;
-            width: 90%;
-            text-align: center;
-            animation: popIn 0.3s ease-out;
-        }
-        @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        
-        .card img {
-            width: 100%;
-            border-radius: 10px;
-            margin-bottom: 15px;
-        }
-        .card p { font-size: 16px; line-height: 1.6; margin-bottom: 15px;}
-        .close-btn {
-            background: #4cc9f0;
-            border: none;
-            padding: 8px 20px;
-            border-radius: 20px;
-            color: #0b1021;
-            font-weight: bold;
-            cursor: pointer;
-        }
-    </style>
-</head>
-<body>
-
-    <!-- 这里用 Canvas 画 DNA 动画 -->
-    <canvas id="dnaCanvas"></canvas>
-    <div class="hint">✨ 点击发光的基因节点，解锁专属记忆 ✨</div>
-
-    <!-- 弹窗结构 -->
-    <div class="modal-overlay" id="modal">
-        <div class="card">
-            <img id="modalImg" src="" alt="回忆照片">
-            <p id="modalText"></p>
-            <button class="close-btn" onclick="closeModal()">收下祝福</button>
-        </div>
-    </div>
-
-<script>
-    // 1. 你的照片和文字数据（在这里修改）
     const memories = [
         { text: "在30亿个碱基对中，能遇到您做我的生物老师，是我青春里概率最小的奇迹。", img: "images/photo1.jpg" },
         { text: "您的课就像ATP，总能给我提供源源不断的能量！教师节快乐！", img: "images/photo2.jpg" },
-        { text: "还记得那次实验课全班翻车吗？您没有生气，反而和我们一起笑。亦师亦友，真好。", img: "images/photo3.jpg" }
+        { text: "还记得那次实验课全班翻车吗？您没有生气，反而和我们一起笑。亦师亦友，真好。", img: "images/photo3.jpg" },
+        { text: "感谢您不仅教我们认识细胞，还教会我们如何热爱生活。", img: "images/photo4.jpg" }
     ];
 
-    // 2. 简单的 DNA 旋转动画逻辑
     const canvas = document.getElementById('dnaCanvas');
     const ctx = canvas.getContext('2d');
-    let width, height, points = [];
+    let width, height;
     
     function resize() {
         width = canvas.width = window.innerWidth;
@@ -241,58 +107,113 @@
     window.addEventListener('resize', resize);
     resize();
 
-    // 生成节点
-    for(let i=0; i<memories.length; i++) {
-        points.push({ angle: (i / memories.length) * Math.PI * 2, index: i });
-    }
+    const CONFIG = {
+        segments: 40,
+        radius: 110,
+        gap: 18,
+        speed: 0.015,
+    };
+
+    const SUPER_NODES = [5, 15, 25, 35]; 
 
     let time = 0;
+    let clickableNodes = []; 
+
     function animate() {
         ctx.clearRect(0, 0, width, height);
-        time += 0.02;
+        time += CONFIG.speed;
+        clickableNodes = [];
 
-        points.forEach(p => {
-            const y = height / 2 + Math.sin(p.angle + time) * 150;
-            const x = width / 2 + Math.cos(p.angle + time) * 150;
-            const z = Math.sin(p.angle + time); // 模拟深度
+        const centerX = width / 2;
+        const centerY = height / 2;
+        const totalHeight = CONFIG.segments * CONFIG.gap;
+        const startY = centerY - (totalHeight / 2);
 
-            // 画连接线
-            const y2 = height / 2 + Math.sin(p.angle + Math.PI + time) * 150;
-            const x2 = width / 2 + Math.cos(p.angle + Math.PI + time) * 150;
-            ctx.beginPath();
-            ctx.moveTo(x, y);
-            ctx.lineTo(x2, y2);
-            ctx.strokeStyle = `rgba(76, 201, 240, ${0.2 + z * 0.3})`;
-            ctx.stroke();
+        let renderList = [];
 
-            // 画发光节点
-            ctx.beginPath();
-            ctx.arc(x, y, 8 + z * 4, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(255, 255, 255, ${0.5 + z * 0.5})`;
-            ctx.shadowBlur = 15 + z * 10;
-            ctx.shadowColor = '#4cc9f0';
-            ctx.fill();
-            ctx.shadowBlur = 0;
+        for (let i = 0; i < CONFIG.segments; i++) {
+            let angle = (i * 0.2) + time; 
+            let x1 = centerX + Math.cos(angle) * CONFIG.radius;
+            let z1 = Math.sin(angle); 
+            let x2 = centerX + Math.cos(angle + Math.PI) * CONFIG.radius;
+            let z2 = Math.sin(angle + Math.PI);
+            let y = startY + (i * CONFIG.gap);
 
-            // 绑定点击事件
-            p.x = x; p.y = y; p.radius = 15;
-        });
-        requestAnimationFrame(animate);
-    }
-    animate();
+            renderList.push({ type: 'rung', x1, y, x2, z: z1, zIndex: i });
+            renderList.push({ type: 'node', x: x1, y: y, z: z1, zIndex: i, chain: 0 });
+            renderList.push({ type: 'node', x: x2, y: y, z: z2, zIndex: i, chain: 1 });
+        }
 
-    // 3. 点击交互逻辑
-    canvas.addEventListener('click', (e) => {
-        const rect = canvas.getBoundingClientRect();
-        const mouseX = e.clientX - rect.left;
-        const mouseY = e.clientY - rect.top;
+        renderList.sort((a, b) => a.z - b.z);
 
-        points.forEach(p => {
-            const dist = Math.sqrt((mouseX - p.x)**2 + (mouseY - p.y)**2);
-            if(dist < p.radius) {
-                openModal(memories[p.index]);
+        renderList.forEach(item => {
+            if (item.type === 'rung') {
+                let opacity = 0.15 + (item.z + 1) * 0.3;
+                ctx.beginPath();
+                ctx.moveTo(item.x1, item.y);
+                ctx.lineTo(item.x2, item.y);
+                ctx.strokeStyle = `rgba(148, 163, 184, ${opacity})`;
+                ctx.lineWidth = 2 + item.z; 
+                ctx.stroke();
+
+            } else if (item.type === 'node') {
+                const isSuper = SUPER_NODES.includes(item.zIndex);
+                
+                let scale = 0.4 + (item.z + 1) * 0.3;
+                let size, opacity, color, shadowColor;
+
+                if (isSuper) {
+                    // 白色亮点，只比普通点略大一点
+                    size = 5.5 * scale;
+                    opacity = 0.85 + (item.z + 1) * 0.15;
+                    color = `rgba(255, 255, 255, ${opacity})`;
+                    shadowColor = '#ffffff';
+                } else {
+                    size = 4 * scale;
+                    opacity = 0.3 + (item.z + 1) * 0.35;
+                    color = item.chain === 0 ? `rgba(76, 201, 240, ${opacity})` : `rgba(72, 199, 142, ${opacity})`;
+                    shadowColor = item.chain === 0 ? '#4cc9f0' : '#48c78e';
+                }
+
+                ctx.beginPath();
+                ctx.arc(item.x, item.y, size, 0, Math.PI * 2);
+                ctx.fillStyle = color;
+                ctx.shadowBlur = isSuper ? 18 * scale : 15 * scale;
+                ctx.shadowColor = shadowColor;
+                ctx.fill();
+                ctx.shadowBlur = 0;
+
+                if (isSuper && item.z > -0.2) {
+                    clickableNodes.push({ 
+                        x: item.x, 
+                        y: item.y, 
+                        radius: 30,
+                        zIndex: item.zIndex,
+                        chain: item.chain
+                    });
+                }
             }
         });
+
+        requestAnimationFrame(animate);
+    }
+
+    canvas.addEventListener('click', (e) => {
+        let mouseX = e.clientX;
+        let mouseY = e.clientY;
+
+        for (let i = clickableNodes.length - 1; i >= 0; i--) {
+            let node = clickableNodes[i];
+            let dist = Math.hypot(mouseX - node.x, mouseY - node.y);
+            
+            if (dist < node.radius) {
+                let photoIndex = SUPER_NODES.indexOf(node.zIndex);
+                if (photoIndex !== -1) {
+                    openModal(memories[photoIndex]);
+                }
+                break; 
+            }
+        }
     });
 
     function openModal(data) {
@@ -303,6 +224,8 @@
     function closeModal() {
         document.getElementById('modal').style.display = 'none';
     }
+
+    animate();
 </script>
 </body>
 </html>
